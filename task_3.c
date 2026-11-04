@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <unistd.h>
 
 #define CONFIG_FILE "config.txt"
 
@@ -33,5 +34,19 @@ static int loadConfig(void)
 
 int main(void)
 {
-    return loadConfig() == 0 ? 0 : 1;
+    if (loadConfig() == -1) {
+        return 1;
+    }
+
+    printf("PID процесу: %d\n", (int)getpid());
+    printf("Команда для перезавантаження конфігурації:\n");
+    printf("  kill -USR1 %d\n\n", (int)getpid());
+
+    while (1) {
+        printf("[%s] Повідомлення системи (інтервал %d сек)...\n", logLevel, logInterval);
+        fflush(stdout);
+        sleep(logInterval);
+    }
+
+    return 0;
 }
