@@ -20,3 +20,15 @@ static void print_help(void)
     printf("  --author   Показати ім'я та прізвище розробника\n");
 }
 
+static int print_physical(void)
+{
+    char *path = realpath(".", NULL);
+    if (path == NULL) {
+        perror(PROG_NAME ": realpath");
+        return 1;
+    }
+    printf("%s\n", path);
+    free(path);
+    return 0;
+}
+
