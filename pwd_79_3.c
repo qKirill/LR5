@@ -52,3 +52,41 @@ static int print_logical(void)
     return 0;
 }
 
+int main(int argc, char *argv[])
+{
+    int physical = 0;   
+    int opt;
+
+    static const struct option long_options[] = {
+        {"help",    no_argument, NULL, 'h'},
+        {"version", no_argument, NULL, 'v'},
+        {"author",  no_argument, NULL, 'a'},
+        {NULL, 0, NULL, 0}
+    };
+
+    while ((opt = getopt_long(argc, argv, "LP", long_options, NULL)) != -1) {
+        switch (opt) {
+        case 'L':
+            physical = 0;
+            break;
+        case 'P':
+            physical = 1;
+            break;
+        case 'h':
+            print_help();
+            return 0;
+        case 'v':
+            printf("%s версія %s\n", PROG_NAME, VERSION);
+            return 0;
+        case 'a':
+            printf("Розробник: %s\n", AUTHOR);
+            return 0;
+        default:
+            fprintf(stderr, "Спробуйте '%s --help' для додаткової інформації.\n",
+                    PROG_NAME);
+            return 1;
+        }
+    }
+
+    return physical ? print_physical() : print_logical();
+}
