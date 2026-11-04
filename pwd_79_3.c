@@ -32,3 +32,23 @@ static int print_physical(void)
     return 0;
 }
 
+static int print_logical(void)
+{
+    const char *env = getenv("PWD");
+    struct stat st_env, st_dot;
+
+    if (env != NULL && env[0] == '/' && stat(env, &st_env) == 0 && stat(".", &st_dot) == 0 &&
+        st_env.st_dev == st_dot.st_dev && st_env.st_ino == st_dot.st_ino) {
+        printf("%s\n", env);
+        return 0;
+    }
+
+    char buf[PATH_MAX];
+    if (getcwd(buf, sizeof(buf)) == NULL) {
+        perror(PROG_NAME ": getcwd");
+        return 1;
+    }
+    printf("%s\n", buf);
+    return 0;
+}
+
