@@ -1,13 +1,28 @@
+#define _GNU_SOURCE
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
 #include <signal.h>
+#include <execinfo.h>
+
+#define MAX_FRAMES 64
 
 static void handle_sigquit(int sig)
 {
     (void)sig;
-    static const char msg[] = "\nОтримано SIGQUIT\n";
-    write(STDOUT_FILENO, msg, sizeof(msg) - 1);
+
+    void *frames[MAX_FRAMES];
+    static const char header[] = "\n--- Stack Trace (SIGQUIT) ---\n";
+    static const char footer[] = "-----------------------------\n";
+
+    /* printf у обробнику сигналів небезпечний, тому використовуємо write */
+    write(STDOUT_FILENO, header, sizeof(header) - 1);
+
+    int n = backtrace(frames, MAX_FRAMES);
+    backtrace_symbols_fd(frames, n, STDOUT_FILENO);
+
+    write(STDOUT_FILENO, footer, sizeof(footer) - 1);
 }
 
 int main(void)
